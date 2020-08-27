@@ -33,11 +33,11 @@ class LC_Post_Types {
   public static function register_taxonomies() {
 
     if ( ! is_blog_installed() ) {
-      return;
+      //return;
     }
 
     if ( taxonomy_exists( 'module') ) {
-      return;
+      //return;
     }
 
     register_taxonomy(
@@ -47,12 +47,24 @@ class LC_Post_Types {
         'learningcenter_taxonomy_args_module',
         array(
           'hierarchical'      => false,
-					'show_ui'           => false,
+					'show_ui'           => true,
 					'show_in_nav_menus' => false,
 					'query_var'         => is_admin(),
 					'rewrite'           => false,
 					'public'            => false,
-					'label'             => _x( 'Module', 'Taxonomy name', 'learningcenter' ),
+					'labels'            => array(
+            'name' => _x( 'Modules', 'taxonomy general name' ),
+            'singular_name' => _x( 'Module', 'taxonomy singular name' ),
+            'search_items' =>  __( 'Search Modules' ),
+            'all_items' => __( 'All Modules' ),
+            'parent_item' => __( 'Parent Module' ),
+            'parent_item_colon' => __( 'Parent Module:' ),
+            'edit_item' => __( 'Edit Module' ), 
+            'update_item' => __( 'Update Module' ),
+            'add_new_item' => __( 'Add New Module' ),
+            'new_item_name' => __( 'New Module Name' ),
+            'menu_name' => __( 'Module' ),
+          )
         )
       )
     );
