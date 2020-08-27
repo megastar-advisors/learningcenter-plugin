@@ -71,6 +71,20 @@ class LC_Course {
 
   }
 
+  /**
+   * Register and enqueue scripts that are needed in the backend.
+   * 
+   * @access private
+   * @since 1.0.0
+   */
+  public function register_admin_scripts() {
+    $screen = get_current_screen();
+
+    if( 'course' === $screen->id ) {
+      
+    }
+  }
+
   public static function meta_box_setup() {
       
   }

@@ -64,6 +64,7 @@ final class LearningCenter {
   public function init_hooks() {
     add_action( 'after_setup_theme', array( $this, 'setup_environment' ) );
     add_action( 'init', array( $this, 'init' ), 0 );
+    add_action( 'wp', array( $this, 'frontend_redirect' ) );
 
     // Disable gutenberg
     if ( version_compare( $GLOBALS['wp_version'], '5.0-beta', '>' ) ) {
@@ -152,6 +153,38 @@ final class LearningCenter {
    */
   public function setup_environment() {
     $this->add_thumbnail_support();
+  }
+
+  /**
+   * Check user status and redirect.
+   */
+
+  public function frontend_redirect() {
+    if ( ! is_admin() ) {
+      global $wp_query;
+
+			$post_ID     = get_the_id();
+			$homepage_id = get_option( 'page_on_front' );
+			$blogpage_id = get_option( 'page_for_posts' );
+
+			if ( $homepage_id === $post_ID || $blogpage_id === $post_ID || is_front_page() ) {
+
+				wp_safe_redirect( get_admin_url() ); // If not an individual post, we redirect to the standard admin.
+				exit;
+
+			} else {
+
+				$post_edit_link = admin_url( 'post.php?post=' . $post_ID . '&action=edit' );
+
+				if ( is_user_logged_in() ) {
+					wp_safe_redirect( $post_edit_link ); // Logged in users go to the post edit screen.
+					exit;
+				} else {
+					wp_safe_redirect( wp_login_url( $post_edit_link ) ); // Not logged in users take a detour via the login page.
+					exit;
+				}
+			}
+    }
   }
 
   /**
