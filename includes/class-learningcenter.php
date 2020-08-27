@@ -65,6 +65,7 @@ final class LearningCenter {
     add_action( 'after_setup_theme', array( $this, 'setup_environment' ) );
     add_action( 'init', array( $this, 'init' ), 0 );
 
+    // Disable gutenberg
     if ( version_compare( $GLOBALS['wp_version'], '5.0-beta', '>' ) ) {
       add_filter( 'use_block_editor_for_post', '__return_false' ); // New, > 5 beta
     } else {
