@@ -158,7 +158,6 @@ final class LearningCenter {
   /**
    * Check user status and redirect.
    */
-
   public function frontend_redirect() {
     if ( ! is_admin() ) {
       global $wp_query;
