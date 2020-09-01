@@ -85,6 +85,99 @@ class LC_Course {
     }
   }
 
+  /**
+	 * course_lessons function.
+	 *
+	 * @access public
+	 * @param int    $course_id (default: 0)
+	 * @param string $post_status (default: 'publish')
+	 * @param string $fields (default: 'all'). WP only allows 3 types, but we will limit it to only 'ids' or 'all'
+	 * @return array{ type WP_Post }  $posts_array
+	 */
+	public function course_lessons( $course_id = 0, $post_status = 'publish', $fields = 'all' ) {
+
+		if ( is_a( $course_id, 'WP_Post' ) ) {
+			$course_id = $course_id->ID;
+		}
+
+		$post_args     = array(
+			'post_type'        => 'lesson',
+			'posts_per_page'   => -1,
+			'orderby'          => 'date',
+			'order'            => 'ASC',
+			'meta_query'       => array(
+				array(
+					'key'   => '_lesson_course',
+					'value' => intval( $course_id ),
+				),
+			),
+			'post_status'      => $post_status,
+			'suppress_filters' => 0,
+		);
+		$query_results = new WP_Query( $post_args );
+		$lessons       = $query_results->posts;
+
+		// re order the lessons. This could not be done via the OR meta query as there may be lessons
+		// with the course order for a different course and this should not be included. It could also not
+		// be done via the AND meta query as it excludes lesson that does not have the _order_$course_id but
+		// that have been added to the course.
+		if ( count( $lessons ) > 1 ) {
+
+			foreach ( $lessons as $lesson ) {
+
+				$order = intval( get_post_meta( $lesson->ID, '_order_' . $course_id, true ) );
+				// for lessons with no order set it to be 10000 so that it show up at the end
+				$lesson->course_order = $order ? $order : 100000;
+			}
+
+			uasort( $lessons, array( $this, '_short_course_lessons_callback' ) );
+		}
+
+		/**
+		 * Filter runs inside course_lessons function 
+		 *
+		 * Returns all lessons for a given course
+		 *
+		 * @param array $lessons
+		 * @param int $course_id
+		 */
+		$lessons = apply_filters( 'learningcenter_course_get_lessons', $lessons, $course_id );
+
+		// return the requested fields
+		// runs after the sensei_course_get_lessons filter so the filter always give an array of lesson
+		// objects
+		if ( 'ids' == $fields ) {
+			$lesson_objects = $lessons;
+			$lessons        = array();
+
+			foreach ( $lesson_objects as $lesson ) {
+				$lessons[] = $lesson->ID;
+			}
+		}
+
+		return $lessons;
+
+  }
+  
+  /**
+	 * Used for the uasort in $this->course_lessons()
+	 *
+	 * @since 1.8.0
+	 * @access protected
+	 *
+	 * @param array $lesson_1
+	 * @param array $lesson_2
+	 * @return int
+	 */
+	protected function _short_course_lessons_callback( $lesson_1, $lesson_2 ) {
+
+		if ( $lesson_1->course_order == $lesson_2->course_order ) {
+			return 0;
+		}
+
+		return ( $lesson_1->course_order < $lesson_2->course_order ) ? -1 : 1;
+	}
+
   public static function meta_box_setup() {
       
   }
