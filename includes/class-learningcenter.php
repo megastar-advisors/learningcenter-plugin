@@ -114,7 +114,7 @@ final class LearningCenter {
     include_once LC_ABSPATH . 'includes/class-lc-api.php';
     include_once LC_ABSPATH . 'includes/class-lc-post-types.php';
     include_once LC_ABSPATH . 'includes/class-lc-modules.php';
-    include_once LC_ABSPATH . 'includes/class-lc-advisor.php';
+    include_once LC_ABSPATH . 'includes/class-lc-advisors.php';
   }
 
   /**

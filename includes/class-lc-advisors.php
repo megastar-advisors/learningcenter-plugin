@@ -31,7 +31,7 @@ class LC_Advisors {
    * @since 1.0.0
    */
   public function __construct() {
-    add_action( 'after_setup_theme', array( $this, 'my_add_role_function' ) );
+    add_action( 'after_setup_theme', array( $this, 'create_role' ) );
   }
 
   /**
